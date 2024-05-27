@@ -28,5 +28,10 @@
     "hardhat": "^2.12.5",
     "hardhat-gas-reporter": "^1.0.9",
     "solidity-coverage": "^0.8.2"
+  },
+  "dependencies": {
+    "debug": "^4.3.4",
+    "request": "^2.88.2",
+    "uuid": "^9.0.1"
   }
 }
