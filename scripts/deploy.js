@@ -1,61 +1,27 @@
-// This is a script for deploying your contracts. You can adapt it to deploy
-// yours, or create new ones.
+import { ethers } from 'ethers';
+import LegalProvenance from '../artifacts/contracts/LegalProvenance.sol/LegalProvenance.json';
 
-const path = require("path");
+const contractAddress = 'YOUR_CONTRACT_ADDRESS_HERE'; // Replace with your deployed contract address
 
-async function main() {
-  // This is just a convenience check
-  if (network.name === "hardhat") {
-    console.warn(
-      "You are trying to deploy a contract to the Hardhat Network, which" +
-        "gets automatically created and destroyed every time. Use the Hardhat" +
-        " option '--network localhost'"
-    );
-  }
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const signer = provider.getSigner();
+const contract = new ethers.Contract(contractAddress, LegalProvenance.abi, signer);
 
-  // ethers is available in the global scope
-  const [deployer] = await ethers.getSigners();
-  console.log(
-    "Deploying the contracts with the account:",
-    await deployer.getAddress()
-  );
-
-  console.log("Account balance:", (await deployer.getBalance()).toString());
-
-  const Token = await ethers.getContractFactory("Token");
-  const token = await Token.deploy();
-  await token.deployed();
-
-  console.log("Token address:", token.address);
-
-  // We also save the contract's artifacts and address in the frontend directory
-  saveFrontendFiles(token);
+export async function registerDocument(hash) {
+    const transaction = await contract.registerDocument(hash);
+    await transaction.wait();
 }
 
-function saveFrontendFiles(token) {
-  const fs = require("fs");
-  const contractsDir = path.join(__dirname, "..", "frontend", "src", "contracts");
-
-  if (!fs.existsSync(contractsDir)) {
-    fs.mkdirSync(contractsDir);
-  }
-
-  fs.writeFileSync(
-    path.join(contractsDir, "contract-address.json"),
-    JSON.stringify({ Token: token.address }, undefined, 2)
-  );
-
-  const TokenArtifact = artifacts.readArtifactSync("Token");
-
-  fs.writeFileSync(
-    path.join(contractsDir, "Token.json"),
-    JSON.stringify(TokenArtifact, null, 2)
-  );
+export async function verifyDocument(id) {
+    const transaction = await contract.verifyDocument(id);
+    await transaction.wait();
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+export async function transferOwnership(id, newOwner) {
+    const transaction = await contract.transferOwnership(id, newOwner);
+    await transaction.wait();
+}
+
+export async function getDocument(id) {
+    return await contract.documents(id);
+}
