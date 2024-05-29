@@ -1,27 +1,21 @@
-import { ethers } from 'ethers';
-import LegalProvenance from '../artifacts/contracts/LegalProvenance.sol/LegalProvenance.json';
+// scripts/deploy.js
+async function main() {
+    const [deployer] = await ethers.getSigners();
+    console.log("Deploying contracts with the account:", deployer.address);
 
-const contractAddress = '0x1234567890abcdef1234567890abcdef12345678'; 
+    const balance = await deployer.getBalance();
+    console.log("Account balance:", balance.toString());
 
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-const signer = provider.getSigner();
-const contract = new ethers.Contract(contractAddress, LegalProvenance.abi, signer);
+    const LegalProvenance = await ethers.getContractFactory("LegalProvenance");
+    const legalProvenance = await LegalProvenance.deploy();
+    await legalProvenance.deployed();
 
-export async function registerDocument(hash) {
-    const transaction = await contract.registerDocument(hash);
-    await transaction.wait();
+    console.log("LegalProvenance deployed to:", legalProvenance.address);
 }
 
-export async function verifyDocument(id) {
-    const transaction = await contract.verifyDocument(id);
-    await transaction.wait();
-}
-
-export async function transferOwnership(id, newOwner) {
-    const transaction = await contract.transferOwnership(id, newOwner);
-    await transaction.wait();
-}
-
-export async function getDocument(id) {
-    return await contract.documents(id);
-}
+main()
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });
