@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import LegalProvenance from '../artifacts/contracts/LegalProvenance.sol/LegalProvenance.json';
 
-const contractAddress = 'YOUR_CONTRACT_ADDRESS_HERE'; // Replace with your deployed contract address
+const contractAddress = '0x1234567890abcdef1234567890abcdef12345678'; 
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
